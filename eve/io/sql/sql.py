@@ -187,6 +187,18 @@ class SQL(DataLayer):
                               else getattr(model, sort_item[0]).desc())
             args['sort'] = ql
 
+        # Quick and dirty additions to support query over joins
+        joins = config.SOURCES[resource].get('joins',None)
+        if joins is not None and len(joins) > 0:
+            for join in joins:
+                # query = query.join(join["relation"],
+                #             sqla_op.eq(getattr(join["relation"],join["rel_attr"]),
+                #                getattr(model,join["model_attr"])))
+                query = query.join(join)
+        if 'restricted_filtering' in config.SOURCES[resource]:
+            rest_filt = config.SOURCES[resource]['restricted_filtering']
+            v = self.app.auth_value[rest_filt["value"]]
+            args["spec"].append(sqla_op.eq(getattr(rest_filt['model'], rest_filt["attr"]),v))
         if req.max_results:
             args['max_results'] = req.max_results
         if req.page > 1:

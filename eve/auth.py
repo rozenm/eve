@@ -83,7 +83,7 @@ class BasicAuth(object):
     .. versionadded:: 0.0.4
     """
     def set_request_auth_value(self, value):
-        g.auth_value = value
+        app.auth_value = value
 
     def get_request_auth_value(self):
         return g.get("auth_value")
